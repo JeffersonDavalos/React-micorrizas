@@ -1,24 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Login from './Componentes/login/Loginn';
+import CrearCita from './Componentes/Principal/Crear_cita';
+import Calendario from './Componentes/Principal/Calendario';
+import Principal from './Componentes/Principal/Principal';
+import Consultarcitas from './Componentes/Principal/Consultarcitas';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/principal" element={<Principal />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/crear-cita" element={<CrearCita />} />
+        <Route path="/calendario" element={<Calendario />} /> 
+        <Route path="/consultarCita" element={<Consultarcitas />} /> 
+        <Route path="/Loginn" element={<Login />} /> 
+
+
+      </Routes>
+    </Router>
   );
 }
 
