@@ -1,23 +1,44 @@
 import React from 'react';
 import { Menu } from 'antd';
 import { Link } from 'react-router-dom';
-import { PlusOutlined, CalendarOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
-import './MenuLateral.css'; // Estilos personalizados si son necesarios
+import { UserOutlined, ExperimentOutlined, PlusOutlined, CalendarOutlined, SearchOutlined } from '@ant-design/icons';
 
-const MenuLateral = ({ expanded }) => {
+const MenuLateral = ({ collapsed }) => {
   return (
     <div style={{ height: '100%' }}>
-      {/* Logo en la parte superior con el mismo grosor que el menú superior */}
+      {/* Logo */}
       <div style={{ padding: '0 16px', textAlign: 'center', backgroundColor: '#fff', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <img 
-          src={expanded ? require('../Imagenes/logo2.png') : require('../Imagenes/logo.png')} 
-          alt="Logo Universidad"
-          style={{ height: '100%', maxHeight: '64px', width: 'auto', transition: 'width 0.3s' }} // Ajusta el tamaño según sea necesario
+          src={collapsed ? require('../Imagenes/logo.png') : require('../Imagenes/logo2.png')} 
+          alt="Logo"
+          style={{ height: '100%', maxHeight: '64px', width: 'auto', transition: 'width 0.2s ease-in-out' }} 
         />
       </div>
 
-      {/* Menú de navegación con fondo oscuro */}
-      <Menu theme="dark" mode="inline" inlineCollapsed={!expanded} style={{ height: '100%', borderRight: 0 }}>
+      {/* Menú con submenús */}
+      <Menu theme="dark" mode="inline" style={{ height: '100%', transition: 'all 0.2s ease-in-out' }}>
+
+        {/* Menú Usuario */}
+        <Menu.SubMenu key="usuarios" icon={<UserOutlined />} title="Usuarios">
+          <Menu.Item key="usuarioCrear">
+            <Link to="/usuario">Usuario</Link>
+          </Menu.Item>
+          <Menu.Item key="usuarioActualizar">
+            <Link to="/actualizar-usuario">Actualizar Usuario</Link>
+          </Menu.Item>
+        </Menu.SubMenu>
+
+        {/* Menú Micorrizas */}
+        <Menu.SubMenu key="micorrizas" icon={<ExperimentOutlined />} title="Micorrizas">
+          <Menu.Item key="modeloMicorrizas">
+            <Link to="/modelo-micorrizas">Modelo Micorrizas</Link>
+          </Menu.Item>
+          <Menu.Item key="reentrenamientoMicorrizas">
+            <Link to="/reentrenamiento-micorrizas">Reentrenamiento</Link>
+          </Menu.Item>
+        </Menu.SubMenu>
+
+        {/* Menús independientes adicionales */}
         <Menu.Item key="crearCita" icon={<PlusOutlined />}>
           <Link to="/crear-cita">Crear una cita</Link>
         </Menu.Item>
@@ -27,6 +48,7 @@ const MenuLateral = ({ expanded }) => {
         <Menu.Item key="consultarCita" icon={<SearchOutlined />}>
           <Link to="/consultarCita">Consultar una cita</Link>
         </Menu.Item>
+
       </Menu>
     </div>
   );
