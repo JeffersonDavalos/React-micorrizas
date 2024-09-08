@@ -1,129 +1,183 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css';
-import { FaUser, FaLock } from "react-icons/fa";
+import { Form, Input, Select, Button, message } from 'antd';  
+import { UserOutlined, LockOutlined } from '@ant-design/icons';  
+import backgroundImage from '../Imagenes/portada.jpg'; // Asegúrate de que la ruta sea correcta
+
+const { Option } = Select;
 
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [perfilOptions, setPerfilOptions] = useState([]); 
+  const [selectedPerfil, setSelectedPerfil] = useState(''); 
 
-  // Añadir y remover la clase login-page al body
-  useEffect(() => {
-    document.body.classList.add('login-page');
-    
-    return () => {
-      document.body.classList.remove('login-page');
-    };
-  }, []);
-
-  const handleLogin = () => {
-    // Hacer una solicitud POST a la API
-    fetch('http://127.0.0.1:8000/api/usuarios', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        usuario: username, // O cédula si tu API requiere eso
-        cedula: password,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error al validar las credenciales');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Datos de la API:', data); // Aquí se loguea la data que llega desde la API
-        // Comparar la contraseña ingresada con la devuelta por la API
-        if (data.contraseña === password) {
-          if (rememberMe) {
-            // Guardar las credenciales si "Recordarme" está marcado
-            localStorage.setItem('username', username);
-            localStorage.setItem('password', password);
-          } else {
-            clearStoredCredentials();
-          }
-
-          // Redirigir al usuario a la página principal
-          navigate('/principal');
-        } else {
-          setError('Contraseña incorrecta. Por favor, intenta de nuevo.');
-        }
-      })
-      .catch((error) => {
-        setError('Error de autenticación: ' + error.message);
+  const fetchPerfil = async (usuario) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/perfil', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ usuario }),
       });
-  };
-
-  const clearStoredCredentials = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('password');
-  };
-
-  const handleRememberMeChange = () => {
-    setRememberMe(!rememberMe);
-  };
-
-  useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    const storedPassword = localStorage.getItem('password');
-
-    if (storedUsername && storedPassword) {
-      setUsername(storedUsername);
-      setPassword(storedPassword);
-      setRememberMe(true);
+  
+      if (!response.ok) {
+        throw new Error('Error al obtener el perfil');
+      }
+  
+      const data = await response.json();
+      const perfiles = Array.isArray(data) ? data : [data];
+      
+      if (perfiles.length === 1) {
+        setSelectedPerfil(perfiles[0].id_perfil);
+      }
+  
+      setPerfilOptions(perfiles);
+    } catch (error) {
+      console.error('Error al obtener el perfil: ', error.message);
     }
-  }, [navigate]);
+  };
+  
+  useEffect(() => {
+    if (username) {
+      fetchPerfil(username);
+    }
+  }, [username]);
+
+  const handleUsernameChange = (e) => {
+    const inputValue = e.target.value.toUpperCase(); 
+    const cleanedValue = inputValue.replace(/[0-9]/g, ''); 
+    setUsername(cleanedValue);
+  };
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usuario: username,
+          cedula: password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al validar las credenciales');
+      }
+
+      const data = await response.json();
+      
+      if (data.contraseña === password) {
+        localStorage.setItem('userData', JSON.stringify(data));
+        message.success('Inicio de sesión exitoso');
+        navigate('/principal');
+      } else {
+        setError('Contraseña incorrecta. Por favor, intenta de nuevo.');
+      }
+    } catch (error) {
+      setError('Error de autenticación: ' + error.message);
+    }
+  };
 
   return (
-    <div className='wrapper'>
-      <form>
-        <h1>Login</h1>
-        {/* Mostrar mensaje de error solo si existe */}
-        {error && <div className="error-message">{error}</div>}
-        <div className="input-box">
-          <label htmlFor="username">Usuario</label>
-          <input
-            id="username"
-            type="text"
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <Form
+        name="login"
+        layout="vertical"
+        style={{
+          width: '100%',
+          maxWidth: '400px',
+          padding: '40px',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)', // Fondo transparente
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        }}
+        onFinish={handleLogin}
+      >
+        <h1 style={{ textAlign: 'center', marginBottom: 24 }}>Iniciar Sesión</h1>
+        
+        {error && (
+          <div style={{
+            backgroundColor: '#f8d7da', 
+            color: '#721c24', 
+            padding: '10px', 
+            borderRadius: '5px', 
+            marginBottom: '20px', 
+            textAlign: 'center',
+          }}>
+            {error}
+          </div>
+        )}
+        
+        <Form.Item
+          label="Usuario"
+          name="username"
+          rules={[{ required: true, message: 'Por favor ingresa tu usuario!' }]}
+        >
+          <Input
+            prefix={<UserOutlined />}
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
+            onChange={handleUsernameChange} 
+            placeholder="Ingresa tu usuario"
           />
-          <FaUser className='icon' />
-        </div>
-        <div className="input-box">
-          <label htmlFor="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
+        </Form.Item>
+        
+        <Form.Item
+          label="Contraseña"
+          name="password"
+          rules={[{ required: true, message: 'Por favor ingresa tu contraseña!' }]}
+        >
+          <Input.Password
+            prefix={<LockOutlined />}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
+            placeholder="Ingresa tu contraseña"
           />
-          <FaLock className='icon' />
-        </div>
-        <div className='remember-forgot'>
-          <label>
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={handleRememberMeChange}
-            />
-            Recordarme
-          </label>
-          <a href="#" onClick={clearStoredCredentials}>¿Olvidaste tu contraseña?</a>
-        </div>
-        <button type="button" onClick={handleLogin}>Ingresar</button>
-        <div className='register-link'>
-          <p> ¿No tienes cuenta? <a href="#">Register</a> </p> 
-        </div>
-      </form>
+        </Form.Item>
+
+        <Form.Item
+          label="Perfil"
+          name="perfil"
+          rules={[{ required: true, message: 'Por favor selecciona un perfil!' }]}
+        >
+          <Select
+            value={selectedPerfil}
+            onChange={(value) => setSelectedPerfil(value)}
+            placeholder="Selecciona un perfil"
+          >
+            {Array.isArray(perfilOptions) && perfilOptions.length > 0 ? (
+              perfilOptions.map((perfil) => (
+                <Option key={perfil.id_perfil} value={perfil.id_perfil}>
+                  {perfil.descripcion}
+                </Option>
+              ))
+            ) : (
+              <Option disabled>Cargando perfiles...</Option>
+            )}
+          </Select>
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+            Iniciar Sesión
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 }
