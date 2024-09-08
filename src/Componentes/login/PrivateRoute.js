@@ -1,14 +1,20 @@
 import React from 'react';
-import { Route, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-// Simulación de la autenticación (esto debería reemplazarse con tu lógica real)
-const isAuthenticated = () => {
-  return !!localStorage.getItem('username');  // Devuelve true si hay un usuario autenticado
-};
-
-// Componente de ruta privada
-const PrivateRoute = ({ element: Component, ...rest }) => {
-  return isAuthenticated() ? <Component {...rest} /> : <Navigate to="/" />;
+const PrivateRoute = ({ element: Element }) => {
+  const userData = localStorage.getItem('userData');
+  
+  if (userData) {
+    const user = JSON.parse(userData);  // Deserializar la información de localStorage
+    console.log('respuesta ',user);
+    console.log('Usuario:', user.usuario);
+    console.log('Perfil:', user.id_perfil);
+    
+    const isAuthenticated = user.usuario && user.contraseña && user.id_perfil;
+    return isAuthenticated ? <Element /> : <Navigate to="/" replace />;
+  } else {
+    return <Navigate to="/" replace />;
+  }
 };
 
 export default PrivateRoute;

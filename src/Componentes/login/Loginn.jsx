@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Select, Button, Checkbox, message } from 'antd';  // Importamos componentes de Ant Design
-import { UserOutlined, LockOutlined } from '@ant-design/icons';  // Iconos de Ant Design
+import { Form, Input, Select, Button, message } from 'antd';  
+import { UserOutlined, LockOutlined } from '@ant-design/icons';  
+import backgroundImage from '../Imagenes/portada.jpg'; // Asegúrate de que la ruta sea correcta
 
-const { Option } = Select;  // Para el combo de perfil
+const { Option } = Select;
 
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
-  const [perfilOptions, setPerfilOptions] = useState([]); // Estado para almacenar las opciones de perfil
-  const [selectedPerfil, setSelectedPerfil] = useState(''); // Estado para el perfil seleccionado
+  const [perfilOptions, setPerfilOptions] = useState([]); 
+  const [selectedPerfil, setSelectedPerfil] = useState(''); 
 
-  // Función para manejar las llamadas a la API
   const fetchPerfil = async (usuario) => {
     try {
       const response = await fetch('http://127.0.0.1:8000/api/perfil', {
@@ -22,31 +21,31 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ usuario }), // Enviamos solo el usuario
+        body: JSON.stringify({ usuario }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Error al obtener el perfil');
       }
-
+  
       const data = await response.json();
-      console.log(data);
-
-      if (data && data.length === 1) {
-        setSelectedPerfil(data[0].id_perfil);  // Seleccionamos el perfil automáticamente
+      const perfiles = Array.isArray(data) ? data : [data];
+      
+      if (perfiles.length === 1) {
+        setSelectedPerfil(perfiles[0].id_perfil);
       }
-
-      setPerfilOptions([data]);  // Como el objeto es único, lo envuelvo en un array para mapearlo más adelante
+  
+      setPerfilOptions(perfiles);
     } catch (error) {
-      console.error('Error al obtener el perfil: ', error.message);  // Solo loguea el error en la consola
+      console.error('Error al obtener el perfil: ', error.message);
     }
   };
-
+  
   useEffect(() => {
     if (username) {
       fetchPerfil(username);
     }
-  }, [username]); 
+  }, [username]);
 
   const handleUsernameChange = (e) => {
     const inputValue = e.target.value.toUpperCase(); 
@@ -54,63 +53,73 @@ const Login = () => {
     setUsername(cleanedValue);
   };
 
-  const handleLogin = () => {
-    fetch('http://127.0.0.1:8000/api/usuarios', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        usuario: username,
-        cedula: password,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error al validar las credenciales');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.contraseña === password) {
-          if (rememberMe) {
-            localStorage.setItem('username', username);
-            localStorage.setItem('password', password);
-          } else {
-            clearStoredCredentials();
-          }
-          message.success('Inicio de sesión exitoso');
-          navigate('/principal');
-        } else {
-          setError('Contraseña incorrecta. Por favor, intenta de nuevo.');
-        }
-      })
-      .catch((error) => {
-        setError('Error de autenticación: ' + error.message);
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usuario: username,
+          cedula: password,
+        }),
       });
-  };
 
-  const clearStoredCredentials = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('password');
-  };
+      if (!response.ok) {
+        throw new Error('Error al validar las credenciales');
+      }
 
-  const handleRememberMeChange = () => {
-    setRememberMe(!rememberMe);
+      const data = await response.json();
+      
+      if (data.contraseña === password) {
+        localStorage.setItem('userData', JSON.stringify(data));
+        message.success('Inicio de sesión exitoso');
+        navigate('/principal');
+      } else {
+        setError('Contraseña incorrecta. Por favor, intenta de nuevo.');
+      }
+    } catch (error) {
+      setError('Error de autenticación: ' + error.message);
+    }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f2f5' }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
       <Form
         name="login"
         layout="vertical"
-        style={{ width: 400, padding: 40, backgroundColor: 'white', borderRadius: 8, boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
+        style={{
+          width: '100%',
+          maxWidth: '400px',
+          padding: '40px',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)', // Fondo transparente
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        }}
         onFinish={handleLogin}
       >
         <h1 style={{ textAlign: 'center', marginBottom: 24 }}>Iniciar Sesión</h1>
         
         {error && (
-          <div style={{ backgroundColor: '#f8d7da', color: '#721c24', padding: '10px', borderRadius: '5px', marginBottom: '20px', textAlign: 'center' }}>
+          <div style={{
+            backgroundColor: '#f8d7da', 
+            color: '#721c24', 
+            padding: '10px', 
+            borderRadius: '5px', 
+            marginBottom: '20px', 
+            textAlign: 'center',
+          }}>
             {error}
           </div>
         )}
@@ -123,7 +132,7 @@ const Login = () => {
           <Input
             prefix={<UserOutlined />}
             value={username}
-            onChange={handleUsernameChange}  // Usamos la función que transforma el texto a mayúsculas y elimina números
+            onChange={handleUsernameChange} 
             placeholder="Ingresa tu usuario"
           />
         </Form.Item>
@@ -151,24 +160,16 @@ const Login = () => {
             onChange={(value) => setSelectedPerfil(value)}
             placeholder="Selecciona un perfil"
           >
-            {perfilOptions.map((perfil) => (
-              <Option key={perfil.id_perfil} value={perfil.id_perfil}>
-                {perfil.descripcion}
-              </Option>
-            ))}
+            {Array.isArray(perfilOptions) && perfilOptions.length > 0 ? (
+              perfilOptions.map((perfil) => (
+                <Option key={perfil.id_perfil} value={perfil.id_perfil}>
+                  {perfil.descripcion}
+                </Option>
+              ))
+            ) : (
+              <Option disabled>Cargando perfiles...</Option>
+            )}
           </Select>
-        </Form.Item>
-
-        <Form.Item>
-          <Checkbox
-            checked={rememberMe}
-            onChange={handleRememberMeChange}
-          >
-            Recordarme
-          </Checkbox>
-          <a href="#" style={{ float: 'right' }} onClick={clearStoredCredentials}>
-            Olvidé mi contraseña
-          </a>
         </Form.Item>
 
         <Form.Item>
