@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css';
-import { FaUser, FaLock } from "react-icons/fa";
+import { Form, Input, Select, Button, Checkbox, message } from 'antd';  // Importamos componentes de Ant Design
+import { UserOutlined, LockOutlined } from '@ant-design/icons';  // Iconos de Ant Design
+
+const { Option } = Select;  // Para el combo de perfil
 
 const Login = () => {
   const navigate = useNavigate();
@@ -9,25 +11,57 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [perfilOptions, setPerfilOptions] = useState([]); // Estado para almacenar las opciones de perfil
+  const [selectedPerfil, setSelectedPerfil] = useState(''); // Estado para el perfil seleccionado
 
-  // Añadir y remover la clase login-page al body
+  // Función para manejar las llamadas a la API
+  const fetchPerfil = async (usuario) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/perfil', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ usuario }), // Enviamos solo el usuario
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al obtener el perfil');
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data && data.length === 1) {
+        setSelectedPerfil(data[0].id_perfil);  // Seleccionamos el perfil automáticamente
+      }
+
+      setPerfilOptions([data]);  // Como el objeto es único, lo envuelvo en un array para mapearlo más adelante
+    } catch (error) {
+      console.error('Error al obtener el perfil: ', error.message);  // Solo loguea el error en la consola
+    }
+  };
+
   useEffect(() => {
-    document.body.classList.add('login-page');
-    
-    return () => {
-      document.body.classList.remove('login-page');
-    };
-  }, []);
+    if (username) {
+      fetchPerfil(username);
+    }
+  }, [username]); 
+
+  const handleUsernameChange = (e) => {
+    const inputValue = e.target.value.toUpperCase(); 
+    const cleanedValue = inputValue.replace(/[0-9]/g, ''); 
+    setUsername(cleanedValue);
+  };
 
   const handleLogin = () => {
-    // Hacer una solicitud POST a la API
     fetch('http://127.0.0.1:8000/api/usuarios', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        usuario: username, // O cédula si tu API requiere eso
+        usuario: username,
         cedula: password,
       }),
     })
@@ -38,18 +72,14 @@ const Login = () => {
         return response.json();
       })
       .then((data) => {
-        console.log('Datos de la API:', data); // Aquí se loguea la data que llega desde la API
-        // Comparar la contraseña ingresada con la devuelta por la API
         if (data.contraseña === password) {
           if (rememberMe) {
-            // Guardar las credenciales si "Recordarme" está marcado
             localStorage.setItem('username', username);
             localStorage.setItem('password', password);
           } else {
             clearStoredCredentials();
           }
-
-          // Redirigir al usuario a la página principal
+          message.success('Inicio de sesión exitoso');
           navigate('/principal');
         } else {
           setError('Contraseña incorrecta. Por favor, intenta de nuevo.');
@@ -69,61 +99,84 @@ const Login = () => {
     setRememberMe(!rememberMe);
   };
 
-  useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    const storedPassword = localStorage.getItem('password');
-
-    if (storedUsername && storedPassword) {
-      setUsername(storedUsername);
-      setPassword(storedPassword);
-      setRememberMe(true);
-    }
-  }, [navigate]);
-
   return (
-    <div className='wrapper'>
-      <form>
-        <h1>Login</h1>
-        {/* Mostrar mensaje de error solo si existe */}
-        {error && <div className="error-message">{error}</div>}
-        <div className="input-box">
-          <label htmlFor="username">Usuario</label>
-          <input
-            id="username"
-            type="text"
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f2f5' }}>
+      <Form
+        name="login"
+        layout="vertical"
+        style={{ width: 400, padding: 40, backgroundColor: 'white', borderRadius: 8, boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
+        onFinish={handleLogin}
+      >
+        <h1 style={{ textAlign: 'center', marginBottom: 24 }}>Iniciar Sesión</h1>
+        
+        {error && (
+          <div style={{ backgroundColor: '#f8d7da', color: '#721c24', padding: '10px', borderRadius: '5px', marginBottom: '20px', textAlign: 'center' }}>
+            {error}
+          </div>
+        )}
+        
+        <Form.Item
+          label="Usuario"
+          name="username"
+          rules={[{ required: true, message: 'Por favor ingresa tu usuario!' }]}
+        >
+          <Input
+            prefix={<UserOutlined />}
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
+            onChange={handleUsernameChange}  // Usamos la función que transforma el texto a mayúsculas y elimina números
+            placeholder="Ingresa tu usuario"
           />
-          <FaUser className='icon' />
-        </div>
-        <div className="input-box">
-          <label htmlFor="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
+        </Form.Item>
+        
+        <Form.Item
+          label="Contraseña"
+          name="password"
+          rules={[{ required: true, message: 'Por favor ingresa tu contraseña!' }]}
+        >
+          <Input.Password
+            prefix={<LockOutlined />}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
+            placeholder="Ingresa tu contraseña"
           />
-          <FaLock className='icon' />
-        </div>
-        <div className='remember-forgot'>
-          <label>
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={handleRememberMeChange}
-            />
+        </Form.Item>
+
+        <Form.Item
+          label="Perfil"
+          name="perfil"
+          rules={[{ required: true, message: 'Por favor selecciona un perfil!' }]}
+        >
+          <Select
+            value={selectedPerfil}
+            onChange={(value) => setSelectedPerfil(value)}
+            placeholder="Selecciona un perfil"
+          >
+            {perfilOptions.map((perfil) => (
+              <Option key={perfil.id_perfil} value={perfil.id_perfil}>
+                {perfil.descripcion}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item>
+          <Checkbox
+            checked={rememberMe}
+            onChange={handleRememberMeChange}
+          >
             Recordarme
-          </label>
-          <a href="#" onClick={clearStoredCredentials}>¿Olvidaste tu contraseña?</a>
-        </div>
-        <button type="button" onClick={handleLogin}>Ingresar</button>
-        <div className='register-link'>
-          <p> ¿No tienes cuenta? <a href="#">Register</a> </p> 
-        </div>
-      </form>
+          </Checkbox>
+          <a href="#" style={{ float: 'right' }} onClick={clearStoredCredentials}>
+            Olvidé mi contraseña
+          </a>
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+            Iniciar Sesión
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 }
