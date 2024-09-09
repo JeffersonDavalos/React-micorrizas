@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Row, Col, message, Modal } from 'antd';
-import { useNavigate } from 'react-router-dom'; // Para redireccionar
+import { useNavigate } from 'react-router-dom'; 
 import { CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'; 
 import backgroundImage from '../Imagenes/register.jpg';
 
@@ -10,8 +10,33 @@ const Register = () => {
   const [modalInfo, setModalInfo] = useState({});
   const navigate = useNavigate();
 
+  // Función de validación de cédula
+  const validarCedula = (cedula) => {
+    if (cedula.length !== 10) return false;
+    const digitos = cedula.split('').map(Number);
+    const verificador = digitos.pop();
+    const suma = digitos.reduce((acc, curr, idx) => {
+      const temp = curr * (idx % 2 === 0 ? 2 : 1);
+      return acc + (temp > 9 ? temp - 9 : temp);
+    }, 0);
+    const residuo = suma % 10;
+    const resultado = residuo === 0 ? 0 : 10 - residuo;
+    return resultado === verificador;
+  };
+
   const onFinish = async (values) => {
     console.log('Formulario enviado:', values);
+
+    // Validar la cédula antes de enviar los datos
+    if (!validarCedula(values.cedula)) {
+      setModalInfo({
+        title: 'Error en la Cédula',
+        content: 'La cédula ingresada no es válida. Por favor, verifique los datos.',
+        icon: <ExclamationCircleOutlined style={{ color: 'red', fontSize: '100px' }} />,
+      });
+      setIsModalVisible(true);
+      return;
+    }
 
     try {
       const response = await fetch('http://127.0.0.1:8000/api/registrarUsuario', {
@@ -30,7 +55,7 @@ const Register = () => {
           title: 'Registro Exitoso',
           content: '¡El registro fue exitoso!',
           icon: <CheckCircleOutlined style={{ color: 'green', fontSize: '100px' }} />, 
-          onOk: () => navigate('/'),  // Redirige al login cuando el registro es exitoso
+          onOk: () => navigate('/'),
         });
       } else {
         setModalInfo({
@@ -91,6 +116,7 @@ const Register = () => {
           borderRadius: '8px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           marginRight: '50px',
+          width: '600px', // Aumenta el ancho del formulario
         }}
       >
         <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Registro de Usuario</h2>
@@ -99,75 +125,94 @@ const Register = () => {
           layout="vertical"
           onFinish={onFinish}
         >
-          <Form.Item
-            label="Usuario"
-            name="usuario"
-            rules={[{ required: true, message: 'Por favor ingrese su usuario' }]}
-          >
-            <Input 
-              placeholder="Ingrese su usuario"
-              onKeyPress={handleTextInput}
-              onChange={(e) => handleChangeToUpper('usuario', e)}
-            />
-          </Form.Item>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Usuario"
+                name="usuario"
+                rules={[{ required: true, message: 'Por favor ingrese su usuario' }]}
+              >
+                <Input 
+                  placeholder="Ingrese su usuario"
+                  onKeyPress={handleTextInput}
+                  onChange={(e) => handleChangeToUpper('usuario', e)}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Nombre"
+                name="nombre"
+                rules={[{ required: true, message: 'Por favor ingrese su nombre' }]}
+              >
+                <Input 
+                  placeholder="Ingrese su nombre"
+                  onKeyPress={handleTextInput}
+                  onChange={(e) => handleChangeToUpper('nombre', e)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-          {/* Nombre */}
-          <Form.Item
-            label="Nombre"
-            name="nombre"
-            rules={[{ required: true, message: 'Por favor ingrese su nombre' }]}
-          >
-            <Input 
-              placeholder="Ingrese su nombre"
-              onKeyPress={handleTextInput}
-              onChange={(e) => handleChangeToUpper('nombre', e)}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Apellido"
-            name="apellido"
-            rules={[{ required: true, message: 'Por favor ingrese su apellido' }]}
-          >
-            <Input 
-              placeholder="Ingrese su apellido"
-              onKeyPress={handleTextInput}  
-              onChange={(e) => handleChangeToUpper('apellido', e)} 
-            />
-          </Form.Item>
-          <Form.Item
-            label="Cédula"
-            name="cedula"
-            rules={[
-              { required: true, message: 'Por favor ingrese su cédula' },
-              { len: 10, message: 'La cédula debe tener 10 dígitos' },
-            ]}
-          >
-            <Input 
-              placeholder="Ingrese su cédula" 
-              maxLength={10} 
-              onKeyPress={handleNumberInput}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Correo"
-            name="correo"
-            rules={[
-              { required: true, message: 'Por favor ingrese su correo' },
-              { type: 'email', message: 'Por favor ingrese un correo válido' },
-            ]}
-          >
-            <Input placeholder="Ingrese su correo" />
-          </Form.Item>
-          <Form.Item
-            label="Contraseña"
-            name="contraseña"
-            rules={[
-              { required: true, message: 'Por favor ingrese su contraseña' },
-              { min: 5, message: 'La contraseña debe tener al menos 5 caracteres' },
-            ]}
-          >
-            <Input.Password placeholder="Ingrese su contraseña" />
-          </Form.Item>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Apellido"
+                name="apellido"
+                rules={[{ required: true, message: 'Por favor ingrese su apellido' }]}
+              >
+                <Input 
+                  placeholder="Ingrese su apellido"
+                  onKeyPress={handleTextInput}  
+                  onChange={(e) => handleChangeToUpper('apellido', e)} 
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Cédula"
+                name="cedula"
+                rules={[
+                  { required: true, message: 'Por favor ingrese su cédula' },
+                  { len: 10, message: 'La cédula debe tener 10 dígitos' },
+                ]}
+              >
+                <Input 
+                  placeholder="Ingrese su cédula" 
+                  maxLength={10} 
+                  onKeyPress={handleNumberInput}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Correo"
+                name="correo"
+                rules={[
+                  { required: true, message: 'Por favor ingrese su correo' },
+                  { type: 'email', message: 'Por favor ingrese un correo válido' },
+                ]}
+              >
+                <Input placeholder="Ingrese su correo" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Contraseña"
+                name="contraseña"
+                rules={[
+                  { required: true, message: 'Por favor ingrese su contraseña' },
+                  { min: 5, message: 'La contraseña debe tener al menos 5 caracteres' },
+                ]}
+              >
+                <Input.Password placeholder="Ingrese su contraseña" />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <Form.Item>
             <Row gutter={16}>
               <Col span={12}>

@@ -5,7 +5,7 @@ const PrivateRoute = ({ element: Element }) => {
   const userData = localStorage.getItem('userData');
   
   if (userData) {
-    const user = JSON.parse(userData);  // Deserializar la información de localStorage
+    const user = JSON.parse(userData); 
     console.log('respuesta ',user);
     console.log('Usuario:', user.usuario);
     console.log('Perfil:', user.id_perfil);
