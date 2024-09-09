@@ -4,7 +4,6 @@ import { HomeOutlined } from "@ant-design/icons";
 import { Row } from "reactstrap";
 import { Link, useNavigate } from "react-router-dom";
 
-// Función para convertir la primera letra de cada palabra en mayúscula
 const capitalizeFirstLetterEachWord = (str) => {
   return str.replace(/\b\w/g, (char) => char.toUpperCase());
 };
@@ -15,7 +14,6 @@ const MigajasdePan = ({ paginas = [] }) => {
 
   useEffect(() => {
     if (Array.isArray(paginas) && paginas.length > 0) {
-      // Construimos el array de migas de pan
       const migajas = [
         {
           title: (

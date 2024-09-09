@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Layout, Form, Input, Button, DatePicker, Card, Row, Col, Table, Modal, ConfigProvider, notification } from 'antd';
-import { DeleteOutlined, SearchOutlined, ClearOutlined, SmileOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Layout, Form, Input, Button, DatePicker, Card, Row, Col, Table, Modal, ConfigProvider, notification, Select, Spin } from 'antd';
+import { SearchOutlined, ClearOutlined, SmileOutlined, EditOutlined, ExclamationCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import MigajasdePan from './MigajasdePan';
 import MenuLateral from './MenuLateral';
 import MenuSuperior from './MenuSuperior';
@@ -9,6 +9,7 @@ import moment from 'moment';
 import 'moment/locale/es';
 
 const { RangePicker } = DatePicker;
+const { Option } = Select;
 const { Content, Sider } = Layout;
 
 const ReporteUsuario = () => {
@@ -16,23 +17,25 @@ const ReporteUsuario = () => {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [api, contextHolder] = notification.useNotification();
+  const [perfiles, setPerfiles] = useState([]);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false); 
+  const [modalInfo, setModalInfo] = useState({}); 
 
-  const toggleCollapsed = () => setCollapsed(!collapsed);
-
-  const showNotification = (type, messageText, descriptionText) => {
-    api.open({
-      message: messageText,
-      description: descriptionText,
-      icon: <SmileOutlined style={{ color: type === 'success' ? '#108ee9' : '#ff4d4f' }} />,
-    });
+  const fetchPerfiles = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/listarPerfiles');
+      const perfilesData = await response.json();
+      setPerfiles(perfilesData);
+    } catch (error) {
+      console.error('Error al cargar los perfiles:', error);
+    }
   };
 
   const fetchData = async (values = {}) => {
     setLoading(true);
-
     const rangoFecha = values.rangoFechaCreacion
       ? values.rangoFechaCreacion.map((date) => date.format('YYYY-MM-DD'))
       : null;
@@ -43,7 +46,7 @@ const ReporteUsuario = () => {
       fechaInicio: rangoFecha ? rangoFecha[0] : '',
       fechaFin: rangoFecha ? rangoFecha[1] : '',
     };
-    
+
     try {
       const response = await fetch('http://127.0.0.1:8000/api/reporteUsuario', {
         method: 'POST',
@@ -53,69 +56,91 @@ const ReporteUsuario = () => {
         body: JSON.stringify(requestData),
       });
 
-      if (!response.ok) {
-        if (response.status === 500) {
-          setData([]); 
-          showNotification('error','Datos no encontrados', 'No se encontraron datos con los filtros seleccionados.');
-          return;
-        }
-      }
-
       const dataResponse = await response.json();
-
-      if (dataResponse.length > 0) {
+      if (response.ok && dataResponse.length > 0) {
         setData(dataResponse);
-        showNotification('success', 'Datos obtenidos con éxito', 'Los datos de los usuarios han sido cargados correctamente.');
+        notification.success({
+          message: 'Datos obtenidos con éxito',
+          description: 'Los datos de los usuarios han sido cargados correctamente.',
+          icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+        });
       } else {
-        setData([]); 
-        showNotification('error', 'No se encontró data', 'No hay datos que coincidan con los filtros aplicados.');
+        setData([]);
+        notification.error({
+          message: 'No se encontró data',
+          description: 'No hay datos que coincidan con los filtros aplicados.',
+          icon: <ExclamationCircleOutlined style={{ color: 'red' }} />,
+        });
       }
-
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = (values) => {
-    fetchData(values);
-  };
+  useEffect(() => {
+    fetchPerfiles(); 
+  }, []);
 
-  const handleReset = () => {
-    form.resetFields(); 
-    setData([]);
-  };
-
-  const showDeleteConfirm = (record) => {
+  const showEditModal = (record) => {
     setSelectedUser(record);
-    setVisible(true);
+    setEditModalVisible(true);
   };
 
-  const handleDelete = async () => {
+  const handleEditCancel = () => {
+    setEditModalVisible(false);
+  };
+
+  const handleSaveChanges = async (values) => {
+    setModalLoading(true);
     try {
-      showNotification('success', 'Usuario eliminado', `El usuario ${selectedUser.usuario} ha sido eliminado con éxito.`);
-      setVisible(false);
+      const requestData = {
+        usuario: selectedUser.usuario,
+        cedula: selectedUser.cedula,  
+        perfil: values.perfil,         
+        estado: values.estado,         
+      };
+
+      const response = await fetch('http://127.0.0.1:8000/api/actualizarEstado', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setModalInfo({
+          title: 'Usuario Actualizado',
+          content: `El usuario ${selectedUser.usuario} ha sido actualizado correctamente.`,
+          icon: <CheckCircleOutlined style={{ color: 'green', fontSize: '100px' }} />,
+        });
+        setIsModalVisible(true); 
+        setEditModalVisible(false); 
+        fetchData(); 
+      } else {
+        setModalInfo({
+          title: 'Error en la Actualización',
+          content: data.error || 'Ocurrió un error al actualizar el usuario.',
+          icon: <ExclamationCircleOutlined style={{ color: 'red', fontSize: '100px' }} />,
+        });
+        setIsModalVisible(true); 
+      }
     } catch (error) {
-      showNotification('error', 'Error al eliminar el usuario', error.message);
+      setModalInfo({
+        title: 'Error en la Actualización',
+        content: 'Ocurrió un error inesperado al intentar actualizar el usuario.',
+        icon: <ExclamationCircleOutlined style={{ color: 'red', fontSize: '100px' }} />,
+      });
+      setIsModalVisible(true); 
+    } finally {
+      setModalLoading(false); 
     }
   };
 
-  const handleCancel = () => {
-    setVisible(false);
-  };
-
-  const handleKeyPressUsuario = (e) => {
-    const charCode = e.charCode || e.keyCode;
-    const charStr = String.fromCharCode(charCode);
-    if (!/^[a-zA-Z\s]*$/.test(charStr)) {
-      e.preventDefault();
-    }
-  };
-
-  const handleKeyPressCedula = (e) => {
-    const charCode = e.charCode || e.keyCode;
-    if (!/^[0-9]*$/.test(String.fromCharCode(charCode))) {
-      e.preventDefault();
-    }
+  const handleModalOk = () => {
+    setIsModalVisible(false);
   };
 
   const columns = [
@@ -158,18 +183,18 @@ const ReporteUsuario = () => {
       title: 'Fecha',
       dataIndex: 'fecha_creacion',
       key: 'fecha',
-      render: (text) => moment(text).format('DD/MM/YYYY'), 
+      render: (text) => moment(text).format('DD/MM/YYYY'),
     },
     {
       title: 'Acciones',
       key: 'acciones',
       render: (text, record) => (
         <Button
-          icon={<DeleteOutlined />}
-          type="danger"
-          onClick={() => showDeleteConfirm(record)} 
+          icon={<EditOutlined />}
+          type="primary"
+          onClick={() => showEditModal(record)} 
         >
-          Eliminar
+          Editar
         </Button>
       ),
       responsive: ['md'],
@@ -178,9 +203,8 @@ const ReporteUsuario = () => {
 
   return (
     <ConfigProvider locale={locale}>
-      {contextHolder}
       <Layout style={{ minHeight: '100vh' }}>
-        <Sider collapsible collapsed={collapsed} onCollapse={toggleCollapsed}>
+        <Sider collapsible collapsed={collapsed} onCollapse={() => setCollapsed(!collapsed)}>
           <MenuLateral collapsed={collapsed} />
         </Sider>
 
@@ -209,7 +233,9 @@ const ReporteUsuario = () => {
               <Form
                 form={form}
                 layout="vertical"
-                onFinish={handleSubmit}
+                onFinish={(values) => {
+                  fetchData(values);
+                }}
               >
                 <Row gutter={16}>
                   <Col span={8}>
@@ -217,7 +243,7 @@ const ReporteUsuario = () => {
                       label="Usuario"
                       name="usuario"
                     >
-                      <Input placeholder="Ingrese el usuario" onKeyPress={handleKeyPressUsuario} />
+                      <Input placeholder="Ingrese el usuario" />
                     </Form.Item>
                   </Col>
 
@@ -229,7 +255,6 @@ const ReporteUsuario = () => {
                       <Input
                         placeholder="Ingrese la cédula"
                         maxLength={10}
-                        onKeyPress={handleKeyPressCedula}
                       />
                     </Form.Item>
                   </Col>
@@ -246,10 +271,9 @@ const ReporteUsuario = () => {
                     </Form.Item>
                   </Col>
 
-                  {/* Botones de Filtrar y Limpiar */}
                   <Col span={24} style={{ textAlign: 'right' }}>
                     <Button
-                      onClick={handleReset}
+                      onClick={() => form.resetFields()}
                       icon={<ClearOutlined />}
                       style={{ marginRight: 8 }}
                     >
@@ -278,17 +302,53 @@ const ReporteUsuario = () => {
                 scroll={{ x: 768 }}
               />
             </Card>
+            <Modal
+              open={editModalVisible}
+              title="Editar Usuario"
+              onCancel={handleEditCancel}
+              footer={null}
+            >
+              <Spin spinning={modalLoading}>
+                <Form layout="vertical" onFinish={handleSaveChanges}>
+                  <Form.Item label="Perfil" name="perfil" initialValue={selectedUser?.perfil}>
+                    <Select placeholder="Seleccione el perfil">
+                      {perfiles.map((perfil) => (
+                        <Option key={perfil.value} value={perfil.value}>{perfil.label}</Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item label="Estado" name="estado" initialValue={selectedUser?.estado}>
+                    <Select placeholder="Seleccione el estado">
+                      <Option value="A">Activo</Option>
+                      <Option value="E">Eliminado</Option>
+                      <Option value="I">Inactivo</Option>
+                    </Select>
+                  </Form.Item>
+                  <Button type="primary" htmlType="submit" block>
+                    Guardar Cambios
+                  </Button>
+                </Form>
+              </Spin>
+            </Modal>
+            <Modal
+              open={isModalVisible}
+              onOk={handleModalOk}
+              onCancel={handleModalOk}
+              centered
+              width={400}
+              footer={[
+                <Button key="ok" type="primary" onClick={handleModalOk}>
+                  Aceptar
+                </Button>
+              ]}
+            >
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                {modalInfo.icon}
+                <h2 style={{ textAlign: 'center', fontSize: '24px', marginTop: '16px' }}>{modalInfo.title}</h2>
+                <p style={{ textAlign: 'center', fontSize: '18px' }}>{modalInfo.content}</p>
+              </div>
+            </Modal>
           </Content>
-          <Modal
-            open={visible}
-            title="Confirmación de eliminación"
-            onOk={handleDelete}
-            onCancel={handleCancel}
-            okText="Eliminar"
-            cancelText="Cancelar"
-          >
-            <p>¿Estás seguro de que deseas eliminar al usuario {selectedUser?.usuario}?</p>
-          </Modal>
         </Layout>
       </Layout>
     </ConfigProvider>
