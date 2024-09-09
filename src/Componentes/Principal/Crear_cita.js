@@ -18,7 +18,6 @@ const Crear_cita = () => {
   };
 
   const handleInsertarClick = () => {
-    // Validación de cédula o RUC
     if (tipoDocumento === 'cedula') {
       if (!validarCedula(documento)) {
         message.error('La cédula ingresada no es válida');

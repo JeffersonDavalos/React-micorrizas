@@ -7,14 +7,12 @@ const { Header } = Layout;
 const { Text } = Typography;
 
 const MenuSuperior = () => {
-  // Obtener los datos del usuario desde el localStorage
   const userData = JSON.parse(localStorage.getItem('userData')) || {};
   const nombreCompleto = `${userData.nombre || 'Nombre'} ${userData.apellido || 'Apellido'}`;
   const correo = userData.correo || 'correo@desconocido.com';
   const usuario = userData.usuario || 'Usuario Desconocido';
   const cedula = userData.cedula || '';
 
-  // Crear un contenido personalizado que aparece en el dropdown
   const dropdownContent = (
     <Card
       bordered={false}
@@ -69,7 +67,6 @@ const MenuSuperior = () => {
         boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
       }}
     >
-      {/* Mostrar el nombre del usuario */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <span style={{ marginRight: 16, fontWeight: 'bold', fontSize: '16px' }}>{usuario}</span> {/* Nombre del usuario */}
         <Dropdown

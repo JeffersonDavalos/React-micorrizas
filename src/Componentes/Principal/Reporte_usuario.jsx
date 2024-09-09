@@ -18,11 +18,10 @@ const ReporteUsuario = () => {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [api, contextHolder] = notification.useNotification(); // Inicializar notificación
+  const [api, contextHolder] = notification.useNotification();
 
   const toggleCollapsed = () => setCollapsed(!collapsed);
 
-  // Función para mostrar notificación de éxito o error
   const showNotification = (type, messageText, descriptionText) => {
     api.open({
       message: messageText,
@@ -31,7 +30,6 @@ const ReporteUsuario = () => {
     });
   };
 
-  // Función para llamar a la API solo cuando se haga clic en "Buscar"
   const fetchData = async (values = {}) => {
     setLoading(true);
 
@@ -57,7 +55,7 @@ const ReporteUsuario = () => {
 
       if (!response.ok) {
         if (response.status === 500) {
-          setData([]); // Limpiar la tabla
+          setData([]); 
           showNotification('error','Datos no encontrados', 'No se encontraron datos con los filtros seleccionados.');
           return;
         }
@@ -69,7 +67,7 @@ const ReporteUsuario = () => {
         setData(dataResponse);
         showNotification('success', 'Datos obtenidos con éxito', 'Los datos de los usuarios han sido cargados correctamente.');
       } else {
-        setData([]); // Limpiar la tabla
+        setData([]); 
         showNotification('error', 'No se encontró data', 'No hay datos que coincidan con los filtros aplicados.');
       }
 
@@ -78,20 +76,18 @@ const ReporteUsuario = () => {
     }
   };
 
-  // Ejecutar fetchData cuando el formulario se envíe (solo cuando se haga clic en "Buscar")
   const handleSubmit = (values) => {
     fetchData(values);
   };
 
-  // Resetear los filtros y limpiar la tabla
   const handleReset = () => {
-    form.resetFields(); // Limpiar los campos del formulario
-    setData([]); // Limpiar la tabla
+    form.resetFields(); 
+    setData([]);
   };
 
   const showDeleteConfirm = (record) => {
     setSelectedUser(record);
-    setVisible(true); // Mostrar el modal
+    setVisible(true);
   };
 
   const handleDelete = async () => {
@@ -107,7 +103,6 @@ const ReporteUsuario = () => {
     setVisible(false);
   };
 
-  // Validar que solo se tipee letras y espacios en el campo de "usuario"
   const handleKeyPressUsuario = (e) => {
     const charCode = e.charCode || e.keyCode;
     const charStr = String.fromCharCode(charCode);
@@ -116,7 +111,6 @@ const ReporteUsuario = () => {
     }
   };
 
-  // Validar que solo se tipee números en el campo de "cédula"
   const handleKeyPressCedula = (e) => {
     const charCode = e.charCode || e.keyCode;
     if (!/^[0-9]*$/.test(String.fromCharCode(charCode))) {
@@ -161,13 +155,19 @@ const ReporteUsuario = () => {
       key: 'estado',
     },
     {
+      title: 'Fecha',
+      dataIndex: 'fecha_creacion',
+      key: 'fecha',
+      render: (text) => moment(text).format('DD/MM/YYYY'), 
+    },
+    {
       title: 'Acciones',
       key: 'acciones',
       render: (text, record) => (
         <Button
           icon={<DeleteOutlined />}
           type="danger"
-          onClick={() => showDeleteConfirm(record)} // Mostrar el modal al hacer clic en eliminar
+          onClick={() => showDeleteConfirm(record)} 
         >
           Eliminar
         </Button>
@@ -279,8 +279,6 @@ const ReporteUsuario = () => {
               />
             </Card>
           </Content>
-
-          {/* Modal de confirmación para eliminar usuario */}
           <Modal
             open={visible}
             title="Confirmación de eliminación"

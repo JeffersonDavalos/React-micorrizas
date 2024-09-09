@@ -14,10 +14,8 @@ const ActualizarUsuario = () => {
 
   const toggleCollapsed = () => setCollapsed(!collapsed);
 
-  // Manejo de la función de envío de datos
   const handleSubmit = (values) => {
     console.log('Datos del formulario:', values);
-    // Aquí puedes agregar la lógica para enviar los datos a la API
   };
 
   return (
@@ -28,28 +26,22 @@ const ActualizarUsuario = () => {
 
       <Layout>
         <MenuSuperior />
-
         <Content style={{ margin: '16px' }}>
-          {/* Título arriba de las migas de pan */}
           <Row>
             <Col span={24}>
               <h1 style={{ fontSize: '24px', marginBottom: '16px' }}>Actualizar Usuario</h1>
             </Col>
           </Row>
-
-          {/* Migas de Pan */}
           <Row className="mb-2">
             <Col span={24}>
               <MigajasdePan 
                 paginas={[
-                  { nombre: 'Usuarios', ruta: '' }, // Sin redirección
+                  { nombre: 'Usuarios', ruta: '' },
                   { nombre: 'Actualizar Usuario', ruta: '' }
                 ]}
               />
             </Col>
           </Row>
-
-          {/* Formulario de Actualización */}
           <Card bordered={false} style={{ width: '100%' }}>
             <Form
               form={form}
@@ -57,7 +49,6 @@ const ActualizarUsuario = () => {
               onFinish={handleSubmit}
             >
               <Row gutter={16}>
-                {/* Cédula */}
                 <Col span={12}>
                   <Form.Item
                     label="Cédula"
@@ -67,8 +58,6 @@ const ActualizarUsuario = () => {
                     <Input placeholder="Ingrese la cédula" />
                   </Form.Item>
                 </Col>
-
-                {/* Nombre */}
                 <Col span={12}>
                   <Form.Item
                     label="Nombre"
@@ -78,8 +67,6 @@ const ActualizarUsuario = () => {
                     <Input placeholder="Ingrese el nombre" />
                   </Form.Item>
                 </Col>
-
-                {/* Apellido */}
                 <Col span={12}>
                   <Form.Item
                     label="Apellido"
@@ -89,8 +76,6 @@ const ActualizarUsuario = () => {
                     <Input placeholder="Ingrese el apellido" />
                   </Form.Item>
                 </Col>
-
-                {/* Usuario */}
                 <Col span={12}>
                   <Form.Item
                     label="Usuario"
@@ -100,8 +85,6 @@ const ActualizarUsuario = () => {
                     <Input placeholder="Ingrese el usuario" />
                   </Form.Item>
                 </Col>
-
-                {/* Correo */}
                 <Col span={12}>
                   <Form.Item
                     label="Correo"
@@ -111,8 +94,6 @@ const ActualizarUsuario = () => {
                     <Input placeholder="Ingrese el correo electrónico" />
                   </Form.Item>
                 </Col>
-
-                {/* Contraseña */}
                 <Col span={12}>
                   <Form.Item
                     label="Contraseña"
@@ -122,8 +103,6 @@ const ActualizarUsuario = () => {
                     <Input.Password placeholder="Ingrese la contraseña" />
                   </Form.Item>
                 </Col>
-
-                {/* Perfil */}
                 <Col span={12}>
                   <Form.Item
                     label="Perfil"
@@ -133,12 +112,9 @@ const ActualizarUsuario = () => {
                     <Select placeholder="Selecciona el perfil">
                       <Option value="1">Administrador</Option>
                       <Option value="2">Usuario</Option>
-                      {/* Agrega más perfiles según sea necesario */}
                     </Select>
                   </Form.Item>
                 </Col>
-
-                {/* Estado */}
                 <Col span={12}>
                   <Form.Item
                     label="Estado"
@@ -151,8 +127,6 @@ const ActualizarUsuario = () => {
                     </Select>
                   </Form.Item>
                 </Col>
-
-                {/* Rango de Fecha de Creación */}
                 <Col span={24}>
                   <Form.Item
                     label="Fecha de Creación"
@@ -162,8 +136,6 @@ const ActualizarUsuario = () => {
                     <RangePicker format="YYYY-MM-DD" />
                   </Form.Item>
                 </Col>
-
-                {/* Botón de enviar */}
                 <Col span={24}>
                   <Form.Item>
                     <Button type="primary" htmlType="submit" block>

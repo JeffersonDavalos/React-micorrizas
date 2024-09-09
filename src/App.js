@@ -8,15 +8,14 @@ import Consultarcitas from './Componentes/Principal/Consultarcitas';
 import PrivateRoute from './Componentes/login/PrivateRoute';
 import ActualizarUsuario from './Componentes/Principal/ActualizarUsuario';
 import Reporte_usuario from './Componentes/Principal/Reporte_usuario';
+import Register from './Componentes/login/Register';
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Ruta de login accesible para todos */}
         <Route path="/" element={<Login />} />
-
-        {/* Rutas protegidas */}
+        <Route path="/registro" element={<Register />} /> 
         <Route path="/principal" element={<PrivateRoute element={Principal} />} />
         <Route path="/crear-cita" element={<PrivateRoute element={CrearCita} />} />
         <Route path="/calendario" element={<PrivateRoute element={Calendario} />} />
@@ -24,8 +23,6 @@ const App = () => {
         <Route path="/actualizar-usuario" element={<ActualizarUsuario />} /> 
         <Route path="/usuario" element={<Reporte_usuario />} /> 
 
-
-        {/* Ruta para redirigir rutas inválidas */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
