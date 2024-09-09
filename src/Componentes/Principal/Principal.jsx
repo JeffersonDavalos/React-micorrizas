@@ -6,7 +6,6 @@ import MenuLateral from './MenuLateral';
 import MenuSuperior from './MenuSuperior';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-// Registrar las escalas y elementos para los gráficos
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 const { Content, Sider } = Layout;
@@ -15,19 +14,17 @@ const Principal = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [infoMicorrizas, setInfoMicorrizas] = useState('');
   const [imagenMicorrizas, setImagenMicorrizas] = useState('');
-  const [loading, setLoading] = useState(true); // Estado para controlar la carga
+  const [loading, setLoading] = useState(true); 
 
   const toggleCollapsed = () => setCollapsed(!collapsed);
 
-  // Funciones de mostrar y ocultar cargando
   const mostrarCargando = () => setLoading(true);
   const ocultarCargando = () => setLoading(false);
 
-  // Obtener información desde Wikipedia sobre las micorrizas
   useEffect(() => {
     const obtenerInfoMicorrizas = async () => {
       try {
-        mostrarCargando(); // Mostrar cargando al hacer la petición
+        mostrarCargando(); 
         const response = await fetch('https://es.wikipedia.org/api/rest_v1/page/summary/Micorriza');
         const data = await response.json();
         setInfoMicorrizas(data.extract);
@@ -35,7 +32,7 @@ const Principal = () => {
       } catch (error) {
         console.error('Error al obtener datos de Wikipedia:', error);
       } finally {
-        ocultarCargando(); // Ocultar cargando al recibir la data
+        ocultarCargando(); 
       }
     };
 
@@ -86,8 +83,6 @@ const Principal = () => {
               <MigajasdePan paginas={[{ nombre: 'Micorrizas', ruta: '' }]} />
             </Col>
           </Row>
-
-          {/* Mostrar el indicador de carga mientras se obtienen los datos */}
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px', fontSize: '24px' }}>
               <Spin tip="Cargando información..." size="large" />
