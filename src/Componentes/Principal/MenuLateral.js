@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import { UserOutlined, ExperimentOutlined, PlusOutlined, CalendarOutlined, SearchOutlined } from '@ant-design/icons';
 
 const MenuLateral = ({ collapsed }) => {
+  const userData = JSON.parse(localStorage.getItem('userData')) || {};
+  const { id_perfil } = userData;
+
   return (
     <div style={{ height: '100%' }}>
       <div style={{ padding: '0 16px', textAlign: 'center', backgroundColor: '#fff', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -15,9 +18,11 @@ const MenuLateral = ({ collapsed }) => {
       </div>
       <Menu theme="dark" mode="inline" style={{ height: '100%', transition: 'all 0.2s ease-in-out' }}>
         <Menu.SubMenu key="usuarios" icon={<UserOutlined />} title="Usuarios">
-          <Menu.Item key="usuarioCrear">
-            <Link to="/usuario">Usuario</Link>
-          </Menu.Item>
+          {id_perfil === 1 && (
+            <Menu.Item key="usuarioCrear">
+              <Link to="/usuario">Usuario</Link>
+            </Menu.Item>
+          )}
           <Menu.Item key="usuarioActualizar">
             <Link to="/actualizar-usuario">Actualizar Usuario</Link>
           </Menu.Item>
@@ -30,15 +35,6 @@ const MenuLateral = ({ collapsed }) => {
             <Link to="/reentrenamiento-micorrizas">Reentrenamiento</Link>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.Item key="crearCita" icon={<PlusOutlined />}>
-          <Link to="/crear-cita">Crear una cita</Link>
-        </Menu.Item>
-        <Menu.Item key="calendario" icon={<CalendarOutlined />}>
-          <Link to="/calendario">Calendario</Link>
-        </Menu.Item>
-        <Menu.Item key="consultarCita" icon={<SearchOutlined />}>
-          <Link to="/consultarCita">Consultar una cita</Link>
-        </Menu.Item>
       </Menu>
     </div>
   );

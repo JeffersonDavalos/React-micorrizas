@@ -47,10 +47,9 @@ const Login = () => {
     }
   }, [username]);
 
-  // Función para manejar el cambio del nombre de usuario y convertirlo a mayúsculas automáticamente
   const handleUsernameChange = (e) => {
-    const inputValue = e.target.value.toUpperCase(); // Convierte a mayúsculas
-    const cleanedValue = inputValue.replace(/[0-9]/g, ''); // Elimina números si no los quieres
+    const inputValue = e.target.value.toUpperCase(); 
+    const cleanedValue = inputValue.replace(/[0-9]/g, '');
     setUsername(cleanedValue);
   };
 
@@ -104,7 +103,7 @@ const Login = () => {
           width: '100%',
           maxWidth: '400px',
           padding: '40px',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)', // Fondo transparente
+          backgroundColor: 'rgba(255, 255, 255, 0.8)', 
           borderRadius: '8px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         }}
@@ -133,7 +132,7 @@ const Login = () => {
           <Input
             prefix={<UserOutlined />}
             value={username}
-            onChange={handleUsernameChange}  // Convierte a mayúsculas en cada cambio
+            onChange={handleUsernameChange}  
             placeholder="Ingresa tu usuario"
           />
         </Form.Item>

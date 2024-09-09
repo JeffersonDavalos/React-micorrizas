@@ -1,24 +1,34 @@
 import React from 'react';
 import { Layout, Avatar, Dropdown, Typography, Card, Button, Divider } from 'antd';
 import { UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
 
 const { Header } = Layout;
 const { Text } = Typography;
 
 const MenuSuperior = () => {
+  const navigate = useNavigate(); 
   const userData = JSON.parse(localStorage.getItem('userData')) || {};
   const nombreCompleto = `${userData.nombre || 'Nombre'} ${userData.apellido || 'Apellido'}`;
   const correo = userData.correo || 'correo@desconocido.com';
   const usuario = userData.usuario || 'Usuario Desconocido';
   const cedula = userData.cedula || '';
 
+  const handleConfigClick = () => {
+    navigate('/actualizar-usuario');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('userData');
+    navigate('/Loginn');
+  };
+
   const dropdownContent = (
     <Card
       bordered={false}
       style={{
         width: 320,
-        backgroundColor: '#f9f9f9', 
+        backgroundColor: '#f9f9f9',
         borderRadius: '8px',
         boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
       }}
@@ -40,6 +50,7 @@ const MenuSuperior = () => {
           backgroundColor: '#f0f2f5',
           borderColor: '#d9d9d9',
         }}
+        onClick={handleConfigClick} 
       >
         Configuración de cuenta
       </Button>
@@ -49,8 +60,9 @@ const MenuSuperior = () => {
         type="primary"
         danger
         style={{ width: '100%' }}
+        onClick={handleLogout} 
       >
-        <Link to="/Loginn" style={{ color: 'white' }}>Cerrar Sesión</Link>
+        Cerrar Sesión
       </Button>
     </Card>
   );
@@ -78,6 +90,18 @@ const MenuSuperior = () => {
           <Avatar size="large" icon={<UserOutlined />} style={{ cursor: 'pointer', backgroundColor: '#1890ff' }} />
         </Dropdown>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .site-layout-background {
+            padding: 0 16px;
+            justify-content: space-between;
+          }
+          .ant-dropdown-trigger {
+            font-size: 14px;
+          }
+        }
+      `}</style>
     </Header>
   );
 };
