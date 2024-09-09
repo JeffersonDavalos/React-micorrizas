@@ -19,7 +19,6 @@ const MenuLateralConSuperior = ({ expanded }) => {
 
   return (
     <Sider collapsible collapsed={!expanded} style={{ height: '100vh', background: '#001529' }}>
-      {/* Logo en la parte superior */}
       <div style={{ padding: '16px', textAlign: 'center', background: '#001529' }}>
         <img
           src={require('../Imagenes/gratis-png-universidad-politecnica-salesiana-educacion-superior-universidad-don-bosco-campus-de-estudios-de-posgrado.png')}
@@ -28,7 +27,6 @@ const MenuLateralConSuperior = ({ expanded }) => {
         />
       </div>
 
-      {/* Menú lateral */}
       <Menu theme="dark" mode="inline" inlineCollapsed={!expanded} style={{ height: '100%', borderRight: 0 }}>
         <Menu.Item key="logout" icon={<UserOutlined />}>
           <Link to="/Loginn">Salir</Link>
@@ -43,8 +41,6 @@ const MenuLateralConSuperior = ({ expanded }) => {
           <Link to="/consultarCita">Consultar una cita</Link>
         </Menu.Item>
       </Menu>
-
-      {/* Dropdown perfil en la parte inferior del menú lateral */}
       <div style={{ padding: '16px', textAlign: 'center', background: '#001529', position: 'absolute', bottom: '0', width: '100%' }}>
         <Dropdown overlay={menu}>
           <Avatar size="large" icon={<UserOutlined />} style={{ cursor: 'pointer' }} />

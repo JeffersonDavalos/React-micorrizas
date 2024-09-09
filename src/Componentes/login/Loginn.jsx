@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Form, Input, Select, Button, message } from 'antd';  
+import { useNavigate, Link } from 'react-router-dom'; 
+import { Form, Input, Select, Button, message, Row, Col } from 'antd';  
 import { UserOutlined, LockOutlined } from '@ant-design/icons';  
-import backgroundImage from '../Imagenes/portada.jpg'; // Asegúrate de que la ruta sea correcta
+import backgroundImage from '../Imagenes/portada.jpg'; 
 
 const { Option } = Select;
 
@@ -47,9 +47,10 @@ const Login = () => {
     }
   }, [username]);
 
+  // Función para manejar el cambio del nombre de usuario y convertirlo a mayúsculas automáticamente
   const handleUsernameChange = (e) => {
-    const inputValue = e.target.value.toUpperCase(); 
-    const cleanedValue = inputValue.replace(/[0-9]/g, ''); 
+    const inputValue = e.target.value.toUpperCase(); // Convierte a mayúsculas
+    const cleanedValue = inputValue.replace(/[0-9]/g, ''); // Elimina números si no los quieres
     setUsername(cleanedValue);
   };
 
@@ -132,7 +133,7 @@ const Login = () => {
           <Input
             prefix={<UserOutlined />}
             value={username}
-            onChange={handleUsernameChange} 
+            onChange={handleUsernameChange}  // Convierte a mayúsculas en cada cambio
             placeholder="Ingresa tu usuario"
           />
         </Form.Item>
@@ -177,6 +178,19 @@ const Login = () => {
             Iniciar Sesión
           </Button>
         </Form.Item>
+
+        <Row justify="space-between">
+          <Col>
+            <Link to="/registro">
+              <Button type="link">Registrar</Button>
+            </Link>
+          </Col>
+          <Col>
+            <Link to="/forgot-password">
+              <Button type="link">Olvidé mi contraseña</Button>
+            </Link>
+          </Col>
+        </Row>
       </Form>
     </div>
   );

@@ -6,7 +6,6 @@ import { UserOutlined, ExperimentOutlined, PlusOutlined, CalendarOutlined, Searc
 const MenuLateral = ({ collapsed }) => {
   return (
     <div style={{ height: '100%' }}>
-      {/* Logo */}
       <div style={{ padding: '0 16px', textAlign: 'center', backgroundColor: '#fff', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <img 
           src={collapsed ? require('../Imagenes/logo.png') : require('../Imagenes/logo2.png')} 
@@ -14,11 +13,7 @@ const MenuLateral = ({ collapsed }) => {
           style={{ height: '100%', maxHeight: '64px', width: 'auto', transition: 'width 0.2s ease-in-out' }} 
         />
       </div>
-
-      {/* Menú con submenús */}
       <Menu theme="dark" mode="inline" style={{ height: '100%', transition: 'all 0.2s ease-in-out' }}>
-
-        {/* Menú Usuario */}
         <Menu.SubMenu key="usuarios" icon={<UserOutlined />} title="Usuarios">
           <Menu.Item key="usuarioCrear">
             <Link to="/usuario">Usuario</Link>
@@ -27,8 +22,6 @@ const MenuLateral = ({ collapsed }) => {
             <Link to="/actualizar-usuario">Actualizar Usuario</Link>
           </Menu.Item>
         </Menu.SubMenu>
-
-        {/* Menú Micorrizas */}
         <Menu.SubMenu key="micorrizas" icon={<ExperimentOutlined />} title="Micorrizas">
           <Menu.Item key="modeloMicorrizas">
             <Link to="/modelo-micorrizas">Modelo Micorrizas</Link>
@@ -37,8 +30,6 @@ const MenuLateral = ({ collapsed }) => {
             <Link to="/reentrenamiento-micorrizas">Reentrenamiento</Link>
           </Menu.Item>
         </Menu.SubMenu>
-
-        {/* Menús independientes adicionales */}
         <Menu.Item key="crearCita" icon={<PlusOutlined />}>
           <Link to="/crear-cita">Crear una cita</Link>
         </Menu.Item>
@@ -48,7 +39,6 @@ const MenuLateral = ({ collapsed }) => {
         <Menu.Item key="consultarCita" icon={<SearchOutlined />}>
           <Link to="/consultarCita">Consultar una cita</Link>
         </Menu.Item>
-
       </Menu>
     </div>
   );
