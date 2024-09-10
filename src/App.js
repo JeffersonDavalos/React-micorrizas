@@ -6,6 +6,7 @@ import PrivateRoute from './Componentes/login/PrivateRoute';
 import ActualizarUsuario from './Componentes/Principal/ActualizarUsuario';
 import Reporte_usuario from './Componentes/Principal/Reporte_usuario';
 import Register from './Componentes/login/Register';
+import Modelo from './Componentes/Principal/Modelo';
 
 const App = () => {
   return (
@@ -16,7 +17,7 @@ const App = () => {
         <Route path="/principal" element={<PrivateRoute element={Principal} />} />
         <Route path="/actualizar-usuario" element={<ActualizarUsuario />} /> 
         <Route path="/usuario" element={<Reporte_usuario />} /> 
-
+        <Route path="/modelo-micorrizas" element={<Modelo />} /> 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
