@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Card, Row, Col, Spin, Upload, Button, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import * as tf from '@tensorflow/tfjs';  // Importa TensorFlow.js
 import MigajasdePan from './MigajasdePan';
 import MenuLateral from './MenuLateral';
 import MenuSuperior from './MenuSuperior';
@@ -10,16 +9,15 @@ const { Content, Sider } = Layout;
 
 const Modelo = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [loading, setLoading] = useState(false);  // Cambié el estado inicial a `false`
+  const [loading, setLoading] = useState(false); 
   const [imageUrl, setImageUrl] = useState(null);
   const [prediction, setPrediction] = useState(null);
   const [fileList, setFileList] = useState([]);
   const [imageFile, setImageFile] = useState(null);
-  const [base64Image, setBase64Image] = useState(null); // Nuevo estado para la imagen base64
+  const [base64Image, setBase64Image] = useState(null);
 
   const toggleCollapsed = () => setCollapsed(!collapsed);
 
-  // Manejar la subida de imagen
   const handleUpload = ({ fileList: newFileList }) => {
     console.log('Subiendo archivo:', newFileList);
     setFileList(newFileList);
@@ -29,14 +27,14 @@ const Modelo = () => {
       console.log('Archivo subido correctamente:', file);
 
       const reader = new FileReader();
-      reader.readAsDataURL(file); // Convertir la imagen a base64
+      reader.readAsDataURL(file); 
       reader.onloadend = () => {
-        setBase64Image(reader.result); // Guardar la imagen base64
+        setBase64Image(reader.result);
         const fileUrl = URL.createObjectURL(file);
         setImageUrl(fileUrl);
         setImageFile(file);
         console.log('URL de la imagen:', fileUrl);
-        console.log('Imagen en base64:', reader.result); // Log para verificar la imagen base64
+        console.log('Imagen en base64:', reader.result); 
 
         message.success(`${newFileList[0].name} subido con éxito.`);
       };
@@ -45,9 +43,7 @@ const Modelo = () => {
     }
   };
 
-  // Función para enviar la imagen en base64 a la API de Laravel
   const handlePredict = async () => {
-    // Verificar si la imagen o el modelo no están listos
     if (!base64Image) {
       message.error('Por favor, sube una imagen.');
       console.log('No se ha cargado ninguna imagen.');
@@ -57,14 +53,13 @@ const Modelo = () => {
     setLoading(true);
 
     try {
-      // Enviar la imagen en base64 a la API
       const response = await fetch('http://127.0.0.1:8000/api/predict', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          image: base64Image, // Enviar la imagen en base64
+          image: base64Image,
         }),
       });
 
@@ -109,7 +104,7 @@ const Modelo = () => {
                   listType="picture-card"
                   fileList={fileList}
                   onChange={handleUpload}
-                  beforeUpload={() => false} // Evita la subida automática para hacer la predicción local
+                  beforeUpload={() => false} 
                 >
                   {fileList.length < 1 && <Button icon={<UploadOutlined />}>Subir Imagen</Button>}
                 </Upload>
@@ -131,7 +126,6 @@ const Modelo = () => {
                   )
                 )}
 
-                {/* Botón para ejecutar la predicción */}
                 <Button type="primary" onClick={handlePredict} style={{ marginTop: 20 }}>
                   Predecir
                 </Button>
