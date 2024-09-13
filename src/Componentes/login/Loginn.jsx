@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; 
-import { Form, Input, Select, Button, message, Row, Col } from 'antd';  
-import { UserOutlined, LockOutlined } from '@ant-design/icons';  
-import backgroundImage from '../Imagenes/portada.jpg'; 
+import { useNavigate, Link } from 'react-router-dom';
+import { Form, Input, Select, Button, message, Row, Col } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import backgroundImage from '../Imagenes/portada.jpg';
 
 const { Option } = Select;
 
@@ -11,8 +11,8 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [perfilOptions, setPerfilOptions] = useState([]); 
-  const [selectedPerfil, setSelectedPerfil] = useState(''); 
+  const [perfilOptions, setPerfilOptions] = useState([]);
+  const [selectedPerfil, setSelectedPerfil] = useState('');
 
   const fetchPerfil = async (usuario) => {
     try {
@@ -23,24 +23,24 @@ const Login = () => {
         },
         body: JSON.stringify({ usuario }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Error al obtener el perfil');
       }
-  
+
       const data = await response.json();
       const perfiles = Array.isArray(data) ? data : [data];
-      
+
       if (perfiles.length === 1) {
         setSelectedPerfil(perfiles[0].id_perfil);
       }
-  
+
       setPerfilOptions(perfiles);
     } catch (error) {
       console.error('Error al obtener el perfil: ', error.message);
     }
   };
-  
+
   useEffect(() => {
     if (username) {
       fetchPerfil(username);
@@ -48,7 +48,7 @@ const Login = () => {
   }, [username]);
 
   const handleUsernameChange = (e) => {
-    const inputValue = e.target.value.toUpperCase(); 
+    const inputValue = e.target.value.toUpperCase();
     const cleanedValue = inputValue.replace(/[0-9]/g, '');
     setUsername(cleanedValue);
   };
@@ -71,7 +71,7 @@ const Login = () => {
       }
 
       const data = await response.json();
-      
+
       if (data.contraseña === password) {
         localStorage.setItem('userData', JSON.stringify(data));
         message.success('Inicio de sesión exitoso');
@@ -94,6 +94,7 @@ const Login = () => {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        padding: '0 16px', // Añadir padding en pantallas pequeñas
       }}
     >
       <Form
@@ -103,27 +104,29 @@ const Login = () => {
           width: '100%',
           maxWidth: '400px',
           padding: '40px',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
           borderRadius: '8px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         }}
         onFinish={handleLogin}
       >
         <h1 style={{ textAlign: 'center', marginBottom: 24 }}>Iniciar Sesión</h1>
-        
+
         {error && (
-          <div style={{
-            backgroundColor: '#f8d7da', 
-            color: '#721c24', 
-            padding: '10px', 
-            borderRadius: '5px', 
-            marginBottom: '20px', 
-            textAlign: 'center',
-          }}>
+          <div
+            style={{
+              backgroundColor: '#f8d7da',
+              color: '#721c24',
+              padding: '10px',
+              borderRadius: '5px',
+              marginBottom: '20px',
+              textAlign: 'center',
+            }}
+          >
             {error}
           </div>
         )}
-        
+
         <Form.Item
           label="Usuario"
           name="username"
@@ -132,11 +135,11 @@ const Login = () => {
           <Input
             prefix={<UserOutlined />}
             value={username}
-            onChange={handleUsernameChange}  
+            onChange={handleUsernameChange}
             placeholder="Ingresa tu usuario"
           />
         </Form.Item>
-        
+
         <Form.Item
           label="Contraseña"
           name="password"
@@ -193,6 +196,6 @@ const Login = () => {
       </Form>
     </div>
   );
-}
+};
 
 export default Login;

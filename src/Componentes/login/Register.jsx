@@ -101,22 +101,24 @@ const Register = () => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
-        justifyContent: 'flex-end',
+        justifyContent: 'center', // Cambiar a 'center' para centrar el formulario en pantallas pequeñas
         alignItems: 'center',
+        padding: '20px', // Añadir padding para pantallas pequeñas
       }}
     >
       <Col
         xs={24}
         sm={18}
-        md={12}
-        lg={8}
+        md={14}
+        lg={10}
+        xl={8} // Añadir tamaño 'xl' para pantallas grandes
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)', // Mayor opacidad para mejor contraste
           padding: '30px',
           borderRadius: '8px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          marginRight: '50px',
-          width: '600px', // Aumenta el ancho del formulario
+          width: '100%', // Ajustar el ancho al 100% en pantallas pequeñas
+          maxWidth: '600px', // Mantener un ancho máximo para pantallas grandes
         }}
       >
         <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Registro de Usuario</h2>
@@ -126,7 +128,7 @@ const Register = () => {
           onFinish={onFinish}
         >
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={24} md={12}> {/* En pantallas pequeñas, ocupar todo el ancho */}
               <Form.Item
                 label="Usuario"
                 name="usuario"
@@ -139,7 +141,7 @@ const Register = () => {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={24} md={12}>
               <Form.Item
                 label="Nombre"
                 name="nombre"
@@ -155,7 +157,7 @@ const Register = () => {
           </Row>
 
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={24} md={12}>
               <Form.Item
                 label="Apellido"
                 name="apellido"
@@ -168,7 +170,7 @@ const Register = () => {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={24} md={12}>
               <Form.Item
                 label="Cédula"
                 name="cedula"
@@ -187,7 +189,7 @@ const Register = () => {
           </Row>
 
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={24} md={12}>
               <Form.Item
                 label="Correo"
                 name="correo"
@@ -199,7 +201,7 @@ const Register = () => {
                 <Input placeholder="Ingrese su correo" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={24} md={12}>
               <Form.Item
                 label="Contraseña"
                 name="contraseña"
