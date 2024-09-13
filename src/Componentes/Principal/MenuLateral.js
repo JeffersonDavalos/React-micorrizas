@@ -31,9 +31,9 @@ const MenuLateral = ({ collapsed }) => {
           <Menu.Item key="modeloMicorrizas">
             <Link to="/modelo-micorrizas">Modelo Micorrizas</Link>
           </Menu.Item>
-          <Menu.Item key="reentrenamientoMicorrizas">
-            <Link to="/reentrenamiento-micorrizas">Reentrenamiento</Link>
-          </Menu.Item>
+          //<Menu.Item key="reentrenamientoMicorrizas">
+            //<Link to="/reentrenamiento-micorrizas">Reentrenamiento</Link>
+          //</Menu.Item>
         </Menu.SubMenu>
       </Menu>
     </div>
