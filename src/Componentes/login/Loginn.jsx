@@ -94,7 +94,7 @@ const Login = () => {
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        padding: '0 16px', // Añadir padding en pantallas pequeñas
+        padding: '0 16px',
       }}
     >
       <Form

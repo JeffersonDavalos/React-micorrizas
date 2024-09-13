@@ -19,7 +19,7 @@ const Modelo = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
-  const [prediction, setPrediction] = useState(null); // Esto guardará el valor de predicción
+  const [prediction, setPrediction] = useState(null); 
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -50,13 +50,11 @@ const Modelo = () => {
         const fileUrl = URL.createObjectURL(file);
         setImageUrl(fileUrl);
 
-        // Solo mostrar el mensaje una vez, si se ha cargado un archivo nuevo.
         if (newFileList.length === 1) {
           message.success(`${newFileList[0].name} subido con éxito.`);
         }
       };
     } else {
-      // Si el fileList está vacío, limpiamos la previsualización
       setImageUrl(null);
       setBase64Image(null);
     }
@@ -85,7 +83,7 @@ const Modelo = () => {
 
       console.log(data);
       if (data.prediccion) {
-        setPrediction(data.prediccion); // Establecemos la predicción recibida
+        setPrediction(data.prediccion); 
       } else {
         message.error('Error en la predicción.');
       }
@@ -119,7 +117,6 @@ const Modelo = () => {
             </Col>
           </Row>
 
-          {/* Título debajo de las migas de pan */}
           <Row justify="center">
             <Col span={24} style={{ textAlign: 'center', marginTop: '10px', marginBottom: '20px' }}>
               <h1>Modelo Micorrizas</h1>
@@ -158,7 +155,6 @@ const Modelo = () => {
                       />
                       {prediction !== null && (
                         <p style={{ marginTop: '20px', fontSize: '16px' }}>
-                          {/* Comparar predicción como cadena de texto */}
                           Clase predicha: {prediction === '0' ? 'Endomicorriza' : 'Ectomicorriza'}
                         </p>
                       )}
@@ -193,3 +189,4 @@ const Modelo = () => {
 };
 
 export default Modelo;
+

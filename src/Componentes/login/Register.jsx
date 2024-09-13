@@ -101,9 +101,9 @@ const Register = () => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
-        justifyContent: 'center', // Cambiar a 'center' para centrar el formulario en pantallas pequeñas
+        justifyContent: 'center',
         alignItems: 'center',
-        padding: '20px', // Añadir padding para pantallas pequeñas
+        padding: '20px', 
       }}
     >
       <Col
@@ -111,14 +111,14 @@ const Register = () => {
         sm={18}
         md={14}
         lg={10}
-        xl={8} // Añadir tamaño 'xl' para pantallas grandes
+        xl={8} 
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.9)', // Mayor opacidad para mejor contraste
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
           padding: '30px',
           borderRadius: '8px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          width: '100%', // Ajustar el ancho al 100% en pantallas pequeñas
-          maxWidth: '600px', // Mantener un ancho máximo para pantallas grandes
+          width: '100%', 
+          maxWidth: '600px',
         }}
       >
         <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Registro de Usuario</h2>
